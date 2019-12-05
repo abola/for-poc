@@ -4,7 +4,7 @@ def imageName = "localhost:32000/app"
 def imageTag = "1.0" // image's tag
 def podReplicaCount = "3"
 def serviceType = "ClusterIP" // None, NodePort, ClusterIP, LoadBalancer
-def servicePorts = ""
+def port = "3000"
 def nodePort = "" // if serviceType is NodePort
 def targetPort = ""
 
@@ -38,6 +38,7 @@ volumes: [
             --set project.pod.image.name=${imageName} \
             --set project.pod.image.tag=${imageTag} \
             --set project.pod.replica=${podReplicaCount} \
+            --set project.service.port=${port} \
             healthy/chart/ \
           | kubectl apply -f - 
         """
