@@ -1,4 +1,4 @@
-def name = "app"
+def name = "health-app"
 def namespace = "my-team-1001"
 def imageName = "localhost:32000/app"
 def imageTag = "1.0" // image's tag
