@@ -38,7 +38,10 @@ volumes: [
             --set project.pod.image.name=${imageName} \
             --set project.pod.image.tag=${imageTag} \
             --set project.pod.replica=${podReplicaCount} \
+            --set project.service.type=${serviceType} \
             --set project.service.port=${port} \
+            --set project.service.targetPort=${targetPort} \
+            --set project.service.nodePort=${nodePort} \
             healthy/chart/ \
           | kubectl apply -f - 
         """
