@@ -7,14 +7,14 @@
     4.
     5.
  */
-def name = "health-app"
-def namespace = "my-team-1001"
+def name = "app"
+def namespace = "blue-green"
 def imageName = "localhost:32000/app"
 def imageTag = "1.4.1" // image's tag
 def podReplicaCount = "3"
-def serviceType = "NodePort" // None, NodePort, ClusterIP, LoadBalancer
+def serviceType = "ClusterIP" // None, NodePort, ClusterIP, LoadBalancer
 def port = "3000"
-def nodePort = "32003" // if serviceType is NodePort
+def nodePort = "" // if serviceType is NodePort
 def targetPort = "3000"
 
 podTemplate(cloud: 'kubernetes', containers: [
@@ -41,7 +41,18 @@ volumes: [
       container('kubectl') {
         checkout scm
         sh """
-          kubectl get all --all-namespaces
+          helm template \
+            --set project.name=${name} \
+            --set project.namespace=${namespace} \
+            --set project.pod.image.name=${imageName} \
+            --set project.pod.image.tag=${imageTag} \
+            --set project.pod.replica=${podReplicaCount} \
+            --set project.service.type=${serviceType} \
+            --set project.service.port=${port} \
+            --set project.service.targetPort=${targetPort} \
+            --set project.service.nodePort=${nodePort} \
+            blue-green/chart/
+          
         """
         
         stage('Deploy Green'){
