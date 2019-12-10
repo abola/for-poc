@@ -10,7 +10,7 @@
 def name = "app"
 def namespace = "blue-green"
 def imageName = "localhost:32000/app"
-def imageTag = "1.4.1" // image's tag
+def imageTag = "1.4.2" // image's tag
 def podReplicaCount = "3"
 def serviceType = "ClusterIP" // None, NodePort, ClusterIP, LoadBalancer
 def port = "3000"
