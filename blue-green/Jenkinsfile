@@ -46,8 +46,7 @@ volumes: [
         
         stage('Deploy Green'){
           sh """
-            BLUE_VERSION=$(kubectl get DestinationRule app -o jsonpath='{.spec.subsets[?(@.name=="blue")].labels.version}')
-            helm template \
+          helm template \
               --set project.name=${name} \
               --set project.namespace=${namespace} \
               --set project.pod.image.name=${imageName} \
@@ -58,7 +57,7 @@ volumes: [
               --set project.service.targetPort=${targetPort} \
               --set project.service.nodePort=${nodePort} \
               --set project.gateway.name=${gatewayName} \
-              --set project.version.blue=${BLUE_VERSION} \
+              --set project.version.blue=$(kubectl get DestinationRule app -o jsonpath='{.spec.subsets[?(@.name=="blue")].labels.version}') \
               --set project.version.green=${imageTag} \
               blue-green/deploy-green/
           """
