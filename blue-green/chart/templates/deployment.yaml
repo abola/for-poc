@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ .Values.project.name }}-deploy
+  name: {{ .Values.project.name }}-{{ .Values.project.pod.image.tag }}-deploy
   namespace: {{ .Values.project.namespace }}
 spec:
   replicas: {{ .Values.project.pod.replicas }}
@@ -12,6 +12,7 @@ spec:
     metadata:
       labels:
         app: {{ .Values.project.name }}
+        version: {{ .Values.project.pod.image.tag }}
     spec:
       containers:
       - name: {{ .Values.project.name }}
