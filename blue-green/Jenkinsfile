@@ -1,3 +1,12 @@
+  /*
+    This is an example pipeline that implement blue-green deploy strategy with kubernetes+istio
+    The pipeline is made up of ? main steps
+    1. 
+    2.
+    3.
+    4.
+    5.
+ */
 def name = "health-app"
 def namespace = "my-team-1001"
 def imageName = "localhost:32000/app"
