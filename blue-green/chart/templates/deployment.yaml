@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.project.name }}-deploy
+  namespace: {{ .Values.project.namespace }}
+spec:
+  replicas: {{ .Values.project.pod.replicas }}
+  selector:
+    matchLabels:
+      app: {{ .Values.project.name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.project.name }}
+    spec:
+      containers:
+      - name: {{ .Values.project.name }}
+        image: {{ .Values.project.pod.image.name }}:{{ .Values.project.pod.image.tag }}
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 3000
+        livenessProbe:
+          exec:
+            command:
+            - cat
+            - /alive
+          initialDelaySeconds: 3
+          periodSeconds: 3
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 3000
+          initialDelaySeconds: 3
+          periodSeconds: 3
+        resources:	
+          requests:	
+            memory: "64Mi"	
+            cpu: "150m"	
