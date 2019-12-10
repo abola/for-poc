@@ -58,13 +58,13 @@ volumes: [
               --set project.service.targetPort=${targetPort} \
               --set project.service.nodePort=${nodePort} \
               --set project.gateway.name=${gatewayName} \
-              --set project.version.blue=$BLUE_VERSION \
+              --set project.version.blue=${BLUE_VERSION} \
               --set project.version.green=${imageTag} \
               blue-green/deploy-green/
           """
         }
         stage('Green Ready'){
-
+          sh "sleep 3"
         }
         stage('Switch B2G'){
           sh "sleep 3"
