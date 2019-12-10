@@ -57,7 +57,7 @@ volumes: [
               --set project.service.targetPort=${targetPort} \
               --set project.service.nodePort=${nodePort} \
               --set project.gateway.name=${gatewayName} \
-              --set project.version.blue=$(kubectl get DestinationRule app -o jsonpath='{.spec.subsets[?(@.name=="blue")].labels.version}') \
+              --set project.version.blue=\$(kubectl get DestinationRule app -o jsonpath='{.spec.subsets[?(@.name=="blue")].labels.version}') \
               --set project.version.green=${imageTag} \
               blue-green/deploy-green/
           """
