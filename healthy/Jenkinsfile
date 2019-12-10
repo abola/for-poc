@@ -1,11 +1,11 @@
-def name = "health-app"
+def name = "health-app-green"
 def namespace = "my-team-1001"
 def imageName = "localhost:32000/app"
 def imageTag = "1.4.1" // image's tag
 def podReplicaCount = "3"
-def serviceType = "NodePort" // None, NodePort, ClusterIP, LoadBalancer
+def serviceType = "ClusterIP" // None, NodePort, ClusterIP, LoadBalancer
 def port = "3000"
-def nodePort = "32003" // if serviceType is NodePort
+def nodePort = "" // if serviceType is NodePort
 def targetPort = "3000"
 
 podTemplate(cloud: 'kubernetes', containers: [
