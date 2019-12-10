@@ -11,10 +11,10 @@ spec:
   http:
     - route:
       - destination:
-          host: {{ .Values.project.name }}
+          host: {{ .Values.project.name }}.{{ .Values.project.namespace }}.svc.cluster.local
           subset: blue
         weight: 100
       - destination:
-          host: {{ .Values.project.name }}
+          host: {{ .Values.project.name }}.{{ .Values.project.namespace }}.svc.cluster.local
           subset: green
         weight: 0
