@@ -1,0 +1,57 @@
+def name = "health-app"
+def namespace = "my-team-1001"
+def imageName = "localhost:32000/app"
+def imageTag = "1.4.1" // image's tag
+def podReplicaCount = "3"
+def serviceType = "NodePort" // None, NodePort, ClusterIP, LoadBalancer
+def port = "3000"
+def nodePort = "32003" // if serviceType is NodePort
+def targetPort = "3000"
+
+podTemplate(cloud: 'kubernetes', containers: [
+    containerTemplate(
+        name: 'kubectl',
+        image: 'localhost:32000/kubectl:1.1',
+        ttyEnabled: true,
+        privileged: false,
+        alwaysPullImage: false,
+        workingDir: '/home/jenkins/agent',
+        resourceRequestCpu: '50m',
+        resourceLimitCpu: '100m',
+        resourceRequestMemory: '100Mi',
+        resourceLimitMemory: '200Mi',
+        command: 'cat'
+    )
+],
+volumes: [
+    configMapVolume(mountPath: '/home/jenkins/agent/.kube', configMapName: 'jenkins-cluster-master')
+]
+) {
+  node(POD_LABEL)  {
+    stage('Run maven') {
+      container('kubectl') {
+        checkout scm
+        sh """
+          kubectl get all --all-namespaces
+        """
+        
+        stage('Deploy Green'){
+          sh "sleep 3"
+        }
+        stage('Green Ready'){
+          sh "sleep 3"
+        }
+        stage('Switch B2G'){
+          sh "sleep 3"
+        }
+        stage('Check Healthy'){
+          sh "sleep 3"
+        }
+        stage('Close Blue'){
+          sh "sleep 3"
+        }
+      }
+      
+    }
+  }
+}
