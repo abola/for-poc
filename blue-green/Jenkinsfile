@@ -16,6 +16,14 @@ def serviceType = "ClusterIP" // None, NodePort, ClusterIP, LoadBalancer
 def port = "3000"
 def nodePort = "" // if serviceType is NodePort
 def targetPort = "3000"
+def gatewayName = "systex-gw"
+
+def getCurrentBlueVersion(namespace, appName){
+  echo "Finding app:${appName}.${namespace} current blue version"
+  sh """
+    
+  """
+}
 
 podTemplate(cloud: 'kubernetes', containers: [
     containerTemplate(
@@ -40,26 +48,29 @@ volumes: [
     stage('Run maven') {
       container('kubectl') {
         checkout scm
-        sh """
-          helm template \
-            --set project.name=${name} \
-            --set project.namespace=${namespace} \
-            --set project.pod.image.name=${imageName} \
-            --set project.pod.image.tag=${imageTag} \
-            --set project.pod.replica=${podReplicaCount} \
-            --set project.service.type=${serviceType} \
-            --set project.service.port=${port} \
-            --set project.service.targetPort=${targetPort} \
-            --set project.service.nodePort=${nodePort} \
-            blue-green/chart/
-          
-        """
+
         
         stage('Deploy Green'){
-          sh "sleep 3"
+          sh """
+            BLUE_VERSION=$(kubectl get DestinationRule app -o jsonpath='{.spec.subsets[?(@.name=="blue")].labels.version}')
+            helm template \
+              --set project.name=${name} \
+              --set project.namespace=${namespace} \
+              --set project.pod.image.name=${imageName} \
+              --set project.pod.image.tag=${imageTag} \
+              --set project.pod.replica=${podReplicaCount} \
+              --set project.service.type=${serviceType} \
+              --set project.service.port=${port} \
+              --set project.service.targetPort=${targetPort} \
+              --set project.service.nodePort=${nodePort} \
+              --set project.gateway.name=${gatewayName} \
+              --set project.version.blue=$BLUE_VERSION \
+              --set project.version.green=${imageTag} \
+              blue-green/deploy-green/
+          """
         }
         stage('Green Ready'){
-          sh "sleep 3"
+
         }
         stage('Switch B2G'){
           sh "sleep 3"
