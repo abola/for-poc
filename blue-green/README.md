@@ -27,6 +27,6 @@ spec:
 ### STEP
 1. 請先執行 pipeline 觸發錯誤後，移至 `Jenkins > Manage Jenkins > In-process Script Approval` 中，選擇 `Approval`
 2. 以上動作請再重復一次，直到您 `In-process Script Approval` 的畫面如下圖
-![](https://imgur.com/WrzQCDh)
+![](https://i.imgur.com/WrzQCDh.png)
 
 * https://stackoverflow.com/questions/38276341/jenkins-ci-pipeline-scripts-not-permitted-to-use-method-groovy-lang-groovyobject 
