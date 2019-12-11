@@ -18,6 +18,7 @@ def nodePort = "" // if serviceType is NodePort
 def targetPort = "3000"
 def gatewayName = "systex-gw"
 def timeoutMillis = 15000
+def switchToGreen = false
 
 podTemplate(cloud: 'kubernetes', containers: [
     containerTemplate(
@@ -76,10 +77,20 @@ volumes: [
           }
         }
         stage('Check Healthy'){
-          sh "sleep 3"
+          when {
+            expression {return switchToGreen==false;}
+          }
+          steps {
+            sh "sleep 3"
+          }
         }
         stage('Close Blue'){
-          sh "sleep 3"
+          when {
+            expression {return switchToGreen==true;}
+          }
+          steps {
+            sh "sleep 3"
+          }
         }
       }
       
