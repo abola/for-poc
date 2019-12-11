@@ -70,9 +70,9 @@ volumes: [
             timeout(time: timeoutMillis, unit: 'MILLISECONDS') {
               input '確定切換至新版本？'
             }
-          } catch (err) {
+          } catch (org.jenkinsci.plugins.workflow.steps.FlowInterruptedException ex) {
             // timeout or abort
-            echo "Aborted by " + err.getCauses()[0].getUser()
+            echo "Aborted by " + ex.getCauses()[0].getUser()
           }
         }
         stage('Check Healthy'){
