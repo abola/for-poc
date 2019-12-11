@@ -77,18 +77,12 @@ volumes: [
           }
         }
         stage('Check Healthy'){
-          when {
-            expression {return switchToGreen==false;}
-          }
-          steps {
+          if( switchToGreen==false ){
             sh "sleep 3"
           }
         }
         stage('Close Blue'){
-          when {
-            expression {return switchToGreen==true;}
-          }
-          steps {
+          if( switchToGreen==true ){
             sh "sleep 3"
           }
         }
