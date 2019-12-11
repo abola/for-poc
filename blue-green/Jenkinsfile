@@ -76,13 +76,14 @@ volumes: [
             echo "Aborted by " + err.getCauses()[0].getUser()
           }
         }
-        stage('Check Healthy'){
-          if( switchToGreen==false ){
+        if( switchToGreen==false ){
+          stage('Check Healthy'){
             sh "sleep 3"
           }
         }
-        stage('Close Blue'){
-          if( switchToGreen==true ){
+        
+        if( switchToGreen==true ){
+          stage('Close Blue'){
             sh "sleep 3"
           }
         }
