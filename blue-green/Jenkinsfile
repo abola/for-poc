@@ -69,7 +69,9 @@ volumes: [
         stage('Switch B2G'){
           try {
             timeout(time: timeoutMillis, unit: 'MILLISECONDS') {
-              input '確定切換至新版本？'
+              input "確定將(${name})切換至版本(${imageTag})？"
+              // Approved
+              switchToGreen = true
             }
           } catch (err) {
             // timeout or abort
