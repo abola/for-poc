@@ -96,13 +96,18 @@ volumes: [
         
         if( switchToGreen==false ){
           stage('Undeploy Green'){
-            sh "sleep 3"
+            sh """
+              echo \$(kubectl delete deployment ${name}-${imageTag}-deploy -n ${namespace})
+            """
           }
         }
         
         if( switchToGreen==true ){
           stage('Close Blue'){
-            sh "sleep 3"
+            sh """
+            
+              echo \$(kubectl delete deployment ${name}-\$(kubectl get DestinationRule app -o jsonpath='{.spec.subsets[?(@.name=="blue")].labels.version}')-deploy -n ${namespace})
+            """
           }
         }
         
