@@ -85,7 +85,7 @@ volumes: [
                     --set project.gateway.name=${gatewayName} \
                     --set project.version.blue=\$(kubectl get DestinationRule app -o jsonpath='{.spec.subsets[?(@.name=="blue")].labels.version}') \
                     --set project.version.green=${imageTag} \
-                    blue-green/switch-to-green/
+                    blue-green/switch-blue-2-green/
               """
             }
           } catch (err) {
