@@ -17,7 +17,7 @@ def port = "3000"
 def nodePort = "" // if serviceType is NodePort
 def targetPort = "3000"
 def gatewayName = "systex-gw"
-def timeoutMillis = 15000
+def timeoutSeconds = 150
 def switchToGreen = false
 
 podTemplate(cloud: 'kubernetes', containers: [
@@ -40,10 +40,9 @@ volumes: [
 ]
 ) {
   node(POD_LABEL)  {
-    stage('Run maven') {
+    stage('啟動中') {
       container('kubectl') {
         checkout scm
-
         
         stage('Deploy Green'){
           sh """
@@ -63,23 +62,40 @@ volumes: [
               blue-green/deploy-green/
           """
         }
-        stage('Green Ready'){
+        stage('Check Green Ready'){
           sh "sleep 3"
         }
-        stage('Switch B2G'){
+        stage('Switch Version'){
           try {
-            timeout(time: timeoutMillis, unit: 'MILLISECONDS') {
+            timeout(time: timeoutSeconds, unit: 'SECONDS') {
               input "確定將(${name})切換至版本(${imageTag})？"
               // Approved
               switchToGreen = true
+              sh """
+                helm template \
+                    --set project.name=${name} \
+                    --set project.namespace=${namespace} \
+                    --set project.pod.image.name=${imageName} \
+                    --set project.pod.image.tag=${imageTag} \
+                    --set project.pod.replica=${podReplicaCount} \
+                    --set project.service.type=${serviceType} \
+                    --set project.service.port=${port} \
+                    --set project.service.targetPort=${targetPort} \
+                    --set project.service.nodePort=${nodePort} \
+                    --set project.gateway.name=${gatewayName} \
+                    --set project.version.blue=\$(kubectl get DestinationRule app -o jsonpath='{.spec.subsets[?(@.name=="blue")].labels.version}') \
+                    --set project.version.green=${imageTag} \
+                    blue-green/switch-to-green/
+              """
             }
           } catch (err) {
             // timeout or abort
             echo "Aborted by " + err.getCauses()[0].getUser()
           }
         }
+        
         if( switchToGreen==false ){
-          stage('Check Healthy'){
+          stage('Undeploy Green'){
             sh "sleep 3"
           }
         }
@@ -89,8 +105,8 @@ volumes: [
             sh "sleep 3"
           }
         }
+        
       }
-      
     }
   }
 }
