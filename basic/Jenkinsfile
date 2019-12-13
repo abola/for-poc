@@ -4,11 +4,11 @@
 def name = "app"                        // deployment name
 def namespace = "my-team-1001"          // namespace
 def imageName = "localhost:32000/app"   // Docker image repo
-def imageTag = "1.4"                    // image tag (version)
+def imageTag = "1.4.1"                  // image tag (version)
 def podReplicaCount = "1"               // how many replicas will be create.
-def serviceType = "NodePort"            // None, NodePort, ClusterIP, LoadBalancer
+def serviceType = "ClusterIP"           // None, NodePort, ClusterIP, LoadBalancer
 def port = "3000"
-def nodePort = "32003"                  // if serviceType is NodePort
+def nodePort = ""                       // if serviceType is NodePort
 def targetPort = "3000"
 
 podTemplate(cloud: 'kubernetes', containers: [
