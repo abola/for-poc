@@ -1,7 +1,9 @@
-def name = "app"
+def props = readProperties file: 'config.properties'
+
+def name = props["name"]
 def namespace = "my-team-1001"
-def imageName = "localhost:32000/app"
-def imageTag = "1.4" // image's tag
+def imageName = props["imageName"] // "localhost:32000/app"
+def imageTag = props["imageTag"] // image's tag
 def podReplicaCount = "1"
 def serviceType = "NodePort" // None, NodePort, ClusterIP, LoadBalancer
 def port = "3000"
