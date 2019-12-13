@@ -54,6 +54,20 @@ volumes: [
               --set project.gateway.name=${gatewayName} \
               --set project.version.blue=\$(kubectl get DestinationRule app -o jsonpath='{.spec.subsets[?(@.name=="blue")].labels.version}') \
               --set project.version.green=${imageTag} \
+              blue-green/deploy-green/
+          helm template \
+              --set project.name=${name} \
+              --set project.namespace=${namespace} \
+              --set project.pod.image.name=${imageName} \
+              --set project.pod.image.tag=${imageTag} \
+              --set project.pod.replica=${podReplicaCount} \
+              --set project.service.type=${serviceType} \
+              --set project.service.port=${port} \
+              --set project.service.targetPort=${targetPort} \
+              --set project.service.nodePort=${nodePort} \
+              --set project.gateway.name=${gatewayName} \
+              --set project.version.blue=\$(kubectl get DestinationRule app -o jsonpath='{.spec.subsets[?(@.name=="blue")].labels.version}') \
+              --set project.version.green=${imageTag} \
               blue-green/deploy-green/ \
           | kubectl apply -f -
           """
