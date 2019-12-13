@@ -13,6 +13,7 @@ def targetPort = "3000"
 def gatewayName = "systex-gw"
 def timeoutSeconds = 150
 def switchToGreen = false
+def blueEqualsGreen = false
 
 podTemplate(cloud: 'kubernetes', containers: [
     containerTemplate(
@@ -55,39 +56,82 @@ volumes: [
               --set project.version.green=${imageTag} \
               blue-green/deploy-green/ \
           | kubectl apply -f -
-              
           """
+            try{  
+              sh """
+              helm template \
+                  --set project.name=${name} \
+                  --set project.namespace=${namespace} \
+                  --set project.pod.image.name=${imageName} \
+                  --set project.pod.image.tag=${imageTag} \
+                  --set project.pod.replica=${podReplicaCount} \
+                  --set project.service.type=${serviceType} \
+                  --set project.service.port=${port} \
+                  --set project.service.targetPort=${targetPort} \
+                  --set project.service.nodePort=${nodePort} \
+                  --set project.gateway.name=${gatewayName} \
+                  --set project.version.blue=\$(kubectl get DestinationRule app -o jsonpath='{.spec.subsets[?(@.name=="blue")].labels.version}') \
+                  --set project.version.green=${imageTag} \
+                  blue-green/deploy-green-network/ \
+              | kubectl apply -f -
+              """
+            }catch(err){
+              sh """
+              // first time deploy
+              echo "blue equals green"
+              helm template \
+                  --set project.name=${name} \
+                  --set project.namespace=${namespace} \
+                  --set project.pod.image.name=${imageName} \
+                  --set project.pod.image.tag=${imageTag} \
+                  --set project.pod.replica=${podReplicaCount} \
+                  --set project.service.type=${serviceType} \
+                  --set project.service.port=${port} \
+                  --set project.service.targetPort=${targetPort} \
+                  --set project.service.nodePort=${nodePort} \
+                  --set project.gateway.name=${gatewayName} \
+                  --set project.version.blue=${imageTag}  \
+                  --set project.version.green=${imageTag} \
+                  blue-green/deploy-green-network/ \
+              | kubectl apply -f -
+              """
+              blueEqualsGreen = true
+            }
         }
         stage('Check Green Ready'){
           sh "sleep 3"
         }
         stage('Switch Version'){
-          try {
-            timeout(time: timeoutSeconds, unit: 'SECONDS') {
-              input "確定將(${name})切換至版本(${imageTag})？"
-              // Approved
+          if (blueEqualsGreen ==true) {  
               switchToGreen = true
-              sh """
-                helm template \
-                    --set project.name=${name} \
-                    --set project.namespace=${namespace} \
-                    --set project.pod.image.name=${imageName} \
-                    --set project.pod.image.tag=${imageTag} \
-                    --set project.pod.replica=${podReplicaCount} \
-                    --set project.service.type=${serviceType} \
-                    --set project.service.port=${port} \
-                    --set project.service.targetPort=${targetPort} \
-                    --set project.service.nodePort=${nodePort} \
-                    --set project.gateway.name=${gatewayName} \
-                    --set project.version.blue=\$(kubectl get DestinationRule app -o jsonpath='{.spec.subsets[?(@.name=="blue")].labels.version}') \
-                    --set project.version.green=${imageTag} \
-                    blue-green/switch-blue-2-green/ \
-                 | kubectl apply -f -
-              """
-            }
-          } catch (err) {
-            // timeout or abort
-            echo "Aborted by " + err.getCauses()[0].getUser()
+          }else{
+              try {
+                timeout(time: timeoutSeconds, unit: 'SECONDS') {
+                  input "確定將(${name})切換至版本(${imageTag})？"
+                  // Approved
+                  switchToGreen = true
+                  sh """
+                    helm template \
+                        --set project.name=${name} \
+                        --set project.namespace=${namespace} \
+                        --set project.pod.image.name=${imageName} \
+                        --set project.pod.image.tag=${imageTag} \
+                        --set project.pod.replica=${podReplicaCount} \
+                        --set project.service.type=${serviceType} \
+                        --set project.service.port=${port} \
+                        --set project.service.targetPort=${targetPort} \
+                        --set project.service.nodePort=${nodePort} \
+                        --set project.gateway.name=${gatewayName} \
+                        --set project.version.blue=\$(kubectl get DestinationRule app -o jsonpath='{.spec.subsets[?(@.name=="blue")].labels.version}') \
+                        --set project.version.green=${imageTag} \
+                        blue-green/switch-blue-2-green/ \
+                     | kubectl apply -f -
+                  """
+                }
+              } catch (err) {
+                // timeout or abort
+                echo "Aborted by " + err.getCauses()[0].getUser()
+              }
           }
         }
         
