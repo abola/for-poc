@@ -1,13 +1,14 @@
-def props = readProperties file: 'config.properties'
-
-def name = props["name"]
-def namespace = "my-team-1001"
-def imageName = props["imageName"] // "localhost:32000/app"
-def imageTag = props["imageTag"] // image's tag
-def podReplicaCount = "1"
-def serviceType = "NodePort" // None, NodePort, ClusterIP, LoadBalancer
+/*
+   基礎服務上線樣版
+ */
+def name = "app"                        // deployment name
+def namespace = "my-team-1001"          // namespace
+def imageName = "localhost:32000/app"   // Docker image repo
+def imageTag = "1.4"                    // image tag (version)
+def podReplicaCount = "1"               // how many replicas will be create.
+def serviceType = "NodePort"            // None, NodePort, ClusterIP, LoadBalancer
 def port = "3000"
-def nodePort = "32003" // if serviceType is NodePort
+def nodePort = "32003"                  // if serviceType is NodePort
 def targetPort = "3000"
 
 podTemplate(cloud: 'kubernetes', containers: [
@@ -44,7 +45,7 @@ volumes: [
             --set project.service.port=${port} \
             --set project.service.targetPort=${targetPort} \
             --set project.service.nodePort=${nodePort} \
-            healthy/chart/ \
+            basic/chart/ \
           | kubectl apply -f - 
         """
       }
