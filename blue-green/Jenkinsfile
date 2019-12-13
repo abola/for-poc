@@ -1,17 +1,11 @@
-  /*
-    This is an example pipeline that implement blue-green deploy strategy with kubernetes+istio
-    The pipeline is made up of ? main steps
-    1. 
-    2.
-    3.
-    4.
-    5.
+/*
+    藍綠部署示範樣版
  */
 def name = "app"
 def namespace = "blue-green"
 def imageName = "localhost:32000/app"
-def imageTag = "1.4.2" // image's tag
-def podReplicaCount = "3"
+def imageTag = "1.4.1" // image's tag
+def podReplicaCount = "1"
 def serviceType = "ClusterIP" // None, NodePort, ClusterIP, LoadBalancer
 def port = "3000"
 def nodePort = "" // if serviceType is NodePort
