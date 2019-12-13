@@ -72,7 +72,7 @@ volumes: [
                   --set project.gateway.name=${gatewayName} \
                   --set project.version.blue=\$(kubectl get DestinationRule app -o jsonpath='{.spec.subsets[?(@.name=="blue")].labels.version}') \
                   --set project.version.green=${imageTag} \
-                  blue-green/deploy-green-network/ \
+                  blue-green/apply-green-network/ \
               | kubectl apply -f -
               """
             }catch(err){
@@ -92,7 +92,7 @@ volumes: [
                   --set project.gateway.name=${gatewayName} \
                   --set project.version.blue=${imageTag}  \
                   --set project.version.green=${imageTag} \
-                  blue-green/deploy-green-network/ \
+                  blue-green/apply-green-network/ \
               | kubectl apply -f -
               """
               blueEqualsGreen = true
