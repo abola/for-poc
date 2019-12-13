@@ -80,7 +80,7 @@ volumes: [
                   --set project.service.targetPort=${targetPort} \
                   --set project.service.nodePort=${nodePort} \
                   --set project.gateway.name=${gatewayName} \
-                  --set project.version.blue=\$(kubectl get DestinationRule app -o jsonpath='{.spec.subsets[?(@.name=="blue")].labels.version}') \
+                  --set project.version.blue=\$(kubectl get DestinationRule app -n=${namespace} -o jsonpath='{.spec.subsets[?(@.name=="blue")].labels.version}') \
                   --set project.version.green=${imageTag} \
                   blue-green/apply-green-network/ \
               | kubectl apply -n ${namespace} -f -
@@ -132,7 +132,7 @@ volumes: [
                         --set project.service.targetPort=${targetPort} \
                         --set project.service.nodePort=${nodePort} \
                         --set project.gateway.name=${gatewayName} \
-                        --set project.version.blue=\$(kubectl get DestinationRule app -o jsonpath='{.spec.subsets[?(@.name=="blue")].labels.version}') \
+                        --set project.version.blue=\$(kubectl get DestinationRule app -n=${namespace} -o jsonpath='{.spec.subsets[?(@.name=="blue")].labels.version}') \
                         --set project.version.green=${imageTag} \
                         blue-green/switch-blue-2-green/ \
                      | kubectl apply -f -
@@ -156,7 +156,7 @@ volumes: [
         if( switchToGreen==true ){
           stage('Close Blue'){
             sh """
-              kubectl delete deployment ${name}-\$(kubectl get DestinationRule app -o jsonpath='{.spec.subsets[?(@.name=="blue")].labels.version}')-deploy -n ${namespace}
+              kubectl delete deployment ${name}-\$(kubectl get DestinationRule app -n=${namespace} -o jsonpath='{.spec.subsets[?(@.name=="blue")].labels.version}')-deploy -n ${namespace}
               echo "Update network"
               helm template \
                   --set project.name=${name} \
