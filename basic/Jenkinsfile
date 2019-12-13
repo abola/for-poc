@@ -4,7 +4,7 @@
 def name = "app"                        // deployment name
 def namespace = "my-team-1001"          // namespace
 def imageName = "localhost:32000/app"   // Docker image repo
-def imageTag = "1.4.1"                  // image tag (version)
+def imageTag = "1.4.2"                  // image tag (version)
 def podReplicaCount = "1"               // how many replicas will be create.
 def serviceType = "ClusterIP"           // None, NodePort, ClusterIP, LoadBalancer
 def port = "3000"
