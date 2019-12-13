@@ -53,7 +53,9 @@ volumes: [
               --set project.gateway.name=${gatewayName} \
               --set project.version.blue=\$(kubectl get DestinationRule app -o jsonpath='{.spec.subsets[?(@.name=="blue")].labels.version}') \
               --set project.version.green=${imageTag} \
-              blue-green/deploy-green/
+              blue-green/deploy-green/ \
+          | kubectl apply -f -
+              
           """
         }
         stage('Check Green Ready'){
@@ -79,7 +81,8 @@ volumes: [
                     --set project.gateway.name=${gatewayName} \
                     --set project.version.blue=\$(kubectl get DestinationRule app -o jsonpath='{.spec.subsets[?(@.name=="blue")].labels.version}') \
                     --set project.version.green=${imageTag} \
-                    blue-green/switch-blue-2-green/
+                    blue-green/switch-blue-2-green/ \
+                 | kubectl apply -f -
               """
             }
           } catch (err) {
@@ -91,7 +94,7 @@ volumes: [
         if( switchToGreen==false ){
           stage('Undeploy Green'){
             sh """
-              echo \$(kubectl delete deployment ${name}-${imageTag}-deploy -n ${namespace})
+              kubectl delete deployment ${name}-${imageTag}-deploy -n ${namespace}
             """
           }
         }
@@ -99,8 +102,7 @@ volumes: [
         if( switchToGreen==true ){
           stage('Close Blue'){
             sh """
-            
-              echo \$(kubectl delete deployment ${name}-\$(kubectl get DestinationRule app -o jsonpath='{.spec.subsets[?(@.name=="blue")].labels.version}')-deploy -n ${namespace})
+              kubectl delete deployment ${name}-\$(kubectl get DestinationRule app -o jsonpath='{.spec.subsets[?(@.name=="blue")].labels.version}')-deploy -n ${namespace}
             """
           }
         }
